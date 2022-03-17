@@ -1,0 +1,287 @@
+1. Trim
+
+      Removes all the extra spaces that you have in a particular column. It will remove from the starting and from the end as well, if you have any extra spaces.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+What I Did for TRIM?
+
+I did Trim by going to Transform Ribbon (Menu Bar) -> Format option -> Trim. It removed the unwanted spaces in the table and it applied the trim function to effect since, all 7 columns 
+were selected.
+
+In query settings panel -> In applied steps section -> a fourth transformation is registered as 'Trimmed text'
+                 
+                                                                           COMPLETED TRIM
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+==========================================================================================================================================================================================
+2. Append
+
+     This is basically the union of rows. Union means when we're trying to add some records to an existing table and this should only be done when, you have the same kind of tables 
+     For example - Sheet 1 and Sheet 2 has simlar type of Data structure. So, we will first do the transformations i.e. the changes like 'trimming the text' and 'using the first row
+     as headers' and then -------
+
+ ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------                                                                                             
+
+What I Did for APPEND?
+
+Go to Home Ribbon -> Select Append Queries option and in that -> Select Append Queries as New -> There '2 tables' option will be selected in the Radio button -> Select 'Sheet 1' in 
+the first field and select 'Sheet 1 (2)' in the second field and -> click Ok.
+
+The 2 tables will be combined and showed in the 'Append1' sheet/table as a ONE TABLE. 
+(DAX is expressed as 
+=Table.Combine({Sheet1, #"Sheet1 (2)"})
+
+The table in Sheet 1 is now expressed in DAX as -
+
+=Table.TransformColumnTypes(#"Promoted Headers",{{"Dairy Milk", type text}, {"Sabareesh Jagannathan Rengarajan", type text}, {"SabJag IT Services and Solutions", type text}, 
+{"RSJ and Company", type text}, {"Chocolate", type text}, {"Dairy Product", type text}, {"20", Int64.Type}}) 
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Suppose if we Append 2 Tables wherein the column names are not the same:
+-----------------------------------------------------------------------
+
+Still it find the column name that is relvant i.e. "Sheet1 (3)" and "Appended Customers and Clients" has 'Dairy Milk Silk' column name matching and the values are entered according to the 
+column names. (go and check Appended table 2 and compare it and analyse with "Sheet1 (3)" and "Appended Customers and Clients" columns
+
+                                                                           COMPLETED APPEND FUNCTION TOO 
+
+========================================================================================================================================================================================
+
+3. Merge
+
+MERGE is basically JOIN that we perform in SQL.Whatever JOINs that we had tried in SQL is available inside Power BI as well.
+
+We have different kinds of JOINs in SQL -
+
+a) Inner Join / Simple Join
+b) Left Outer Join / Left Join
+
+Left Outer Join = means all the matching records from both the tables i.e. 'Sheet1' and 'Sheet1 (2)' PLUS all the records from the left table.
+Here, left table means the first one selected in the Merge dialog box which is none other than 'Sheet1'
+
+LEFT OUTER JOIN means all the matching records from both the tables PLUS all the records from the LEFT table
+
+c) Right Outer Join / Right Join
+d) Full Outer Join
+e) Cross Join
+f) Self Join
+g) Left Anti
+h) Right Anti
+
+What to do to learn MERGE function for Power BI?
+------------------------------------------------
+
+- First select 2 sheets in Power BI which have identical columns
+
+- I selected "Sheet1" and "Sheet1 (2)" as they have identical column/columns
+
+- Even if we have 1 identical column it's enough. You can still select the particular column as the Basis column in both the sheets and
+
+- Left Outer Join = means all the matching records from both the tables i.e. 'Sheet1' and 'Sheet1 (2)' PLUS all the records from the left table.
+
+- Here, left table means the first one selected in the Merge dialog box which is none other than 'Sheet1'
+
+- We also learn that once we uncheck the option "Use original column as Prefix" it shows the concerned columns that are alone selected
+
+- It happens that when we select particular columns in the (Appended Table that has been Merged with another Appended Table), it happens that the columns which are
+Separate and are not selected shows as NULL VALUES
+
+Here, the DAX on Merge function will be-:
+----------------------------------------
+
+= Table.NestedJoin(Sheet1, {"Chocolate Brands "}, #"Sheet1 (2)", {"Chocolate Brands "}, "Sheet1 (2)", JoinKind.LeftOuter) - Merge1
+
+= Table.NestedJoin(#"Sheet1 (2)", {"Product Category"}, #"Sheet1 (3)", {"Chocolate"}, "Sheet1 (3)", JoinKind.LeftOuter) - Merge2
+
+= Table.NestedJoin(#"Appended Table 1", {"Corporate Customers"}, #"Appended Table 2", {"Franchises"}, "Appended Table 2", JoinKind.LeftOuter) - Merge3
+
+= Table.NestedJoin(#"Appended Table 1", {"Price in Rs."}, #"Appended Table 1 and 2 as 3", {"Individual Customers"}, "Appended Table 1 and 2 as 3", JoinKind.RightOuter)
+-> Merge4 - Right outer Join - Appended Table 1 and Appended Table 1 and 2 as 3
+
+= Table.ExpandTableColumn(Source, "Appended Table 2", {"Chocolate Brands ", "Individual Customers", "Corporate Customers", "Franchises", "Product Category", 
+"Product Sub Category", "Price in Rs."}, {"Chocolate Brands .1", "Individual Customers.1", "Corporate Customers.1", "Franchises.1", "Product Category.1", 
+"Product Sub Category.1", "Price in Rs..1"}) 
+
+--> This is when we select particular columns in the Appended Table that has been Merged, it happens that the columns which are
+Separate and are not selected shows as NULL VALUES
+
+= Table.ExpandTableColumn(Source, "Appended Table 2", {"Chocolate Brands ", "Individual Customers", "Corporate Customers", "Franchises", "Product Category", 
+"Product Sub Category", "Price in Rs."}, {"Chocolate Brands .1", "Individual Customers.1", "Corporate Customers.1", "Franchises.1", "Product Category.1", 
+"Product Sub Category.1", "Price in Rs..1"})     --> This is when we select particular columns in the Appended Table that has been Merged, it happens that the columns which are
+Separate and are not selected shows as NULL VALUES
+
+When I click the Table in the last column after tables gets merged, it shows the source coumn in DAX as below -:
+----------------------------------------------------------------------------------------------------------------
+
+= Source{0}[#"Sheet1 (3)"]
+
+NEED TO UNDERSTAND WHY RIGHT OUTER JOIN AND INNER JOIN GAVE NULL VALUES HERE?
+
+                                              COMPLETED AS OF NOW
+=======================================================================================================================================================================================
+
+4. Combine/Custom column
+
+COMBINE OR CUSTOM COLUMN TRANSFORMATION means -
+
+	-COMBINE COLUMN means just merging 2 columns alone in a table and making the result appear in 1 column in the same table
+
+For this go to Add Column Ribbon -> click Merge columns
+
+We input 2 values here -
+ 	a) Separator field - Used to give the below mentioned effects in the new column generated. This field has options like 
+
+	- Colon
+	- Comma
+	- Semi colon
+	- Equals sign
+	- Space
+	- Tab
+	- Custom option
+
+	b) New column name (Optional) - Give some name to it
+
+DAX will be expressed as:-
+--------------------------
+
+= Table.AddColumn(#"Added Custom", "Custom", each [Product Category] [Product Sub Category])
+
+= Table.AddColumn(#"Inserted Merged Column5", "CHOCOLATE WITH IT'S CUSTOMERS", each [#"Chocolate Brands "] [Individual Customers])
+
+= Table.AddColumn(#"Reordered Columns", "Merging the Customer and his Franchise", each Text.Combine({[Individual Customers], [Franchises]}, " with his Franchise being "), type text)
+
+
+Table is expressed in DAX format like this below:-
+--------------------------------------------------
+
+= Table.ReorderColumns(#"Inserted Merged Column4",{"Chocolate Brands ", "Individual Customers", "Franchises", "Corporate Customers", "Product Category", "Product Sub Category", 
+"Price in Rs.", "Merged Name", "Merged", "Merging Again with Tab Separator", "Chocolate and Price mentioned in one column"})
+
+- CUSTOM COLUMN FUNCTIONALITY (OTHER WAY FOR DOING MERGE COLUMNS) = Showing error. Will do only Merge Columns:-
+--------------------------------------------------------------------------------------------------------------
+
+= Table.AddColumn(#"Inserted Merged Column3", "Chocolate and Price mentioned in one column", each Text.Combine({[Product Sub Category], 
+Text.From([#"Price in Rs."], "en-IN")}, " Chocolate and Price Rs."), type text)
+
+= Table.AddColumn(#"Removed Columns", "Merged", each Text.Combine({[Product Category], [Product Sub Category]}, "and in that "), type text)
+
+                                            COMPLETED AS OF NOW
+======================================================================================================================================================================================               
+
+5. Group By
+
+Basically, group by is done to aggregate our data.
+
+Like if we find some duplicates (Duplicate values) GROUP BY function can be used.
+
+For performing this particular function, go to HOME RIBBON -> Click GROUP BY option
+
+We get the 'Group BY' dialog box.
+
+We have various fields - Basic (With Radio Button)
+			 Advanced (With Radio Button)
+                         Column selecting field (without anything mentioned)
+                         New column name
+                         Operation
+                         Column
+
+THE VIDEO SAYS THAT GROUP BY IS USED TO DETECT DUPLICATE VALUES VESTED IN THE TABLE.
+
+BUT, IT MAY HAVE MUCH MORE.
+
+DAX will be expressed as:-
+--------------------------
+
+= Table.Group(#"Removed Columns2", {"Chocolate Brands "}, {{"Count", each Table.RowCount(_), Int64.Type}})
+
+ 
+                              COMPLETED AS OF NOW
+=================================================================================================================================================================================
+
+6. Column from example
+
+For explaining this, a excel workbook was prepared on the name "International Chocolates on Various Prices" having only 3 columns
+
+	-S.No
+	-International Brand of Chocolates
+	-Price in Various Currencies
+
+Then, that got loaded inside Power BI and then, finally got opened in Power Query Editor
+Then, go to Add Column -> Click Column From Examples -> Click the 'From Selection' option there (there's another option to look into later as 'from all columns' which will see
+later)
+
+The column that we want to apply the 'From Selection option should be selected before 'Cilcking FROM SELECTION' option
+
+After selecting 'From Selection' option -> a new column called as "column 1" can be separately seen and -> Above that we can see "Enter Sample Values...." -> We will check box the column
+having various currency values and -> we will type the numerical values alone in the new "column 1" and -> When we click 'Ok' -> Automatically that is shown as a separate
+column as "Kept Charecters"
+
+The DAX for the ADD COLUMN option and the table contents are written as - 
+-------------------------------------------------------------------------
+
+= Table.AddColumn(#"Changed Type", "Kept Characters", each Text.Select([PRICE IN VARIOUS CURRENCIES], {" ", "0".."9"}), type text)
+
+= Table.AddColumn(#"Changed Type", "Kept Characters", each Text.Select([PRICE IN VARIOUS CURRENCIES], {" ", "0".."9"}), type text)
+
+                                COMPLETED AS OF NOW      
+
+=================================================================================================================================================================================
+
+
+7. Split by delimetter
+
+This function is being explained with a real time example in the video which we learn by applying thorugh 'NAME' column here (Marks and Ranks of Sabareesh R Fictional Class- 
+Jollylo Jimkhana) 
+
+Here, the column is split into values that we need using the concept 'Split By Delimetter'
+
+Go to Home Ribbon -> and click 'Split column' -> and in that click 'By Delimeter'
+
+After the effect got applied inside Name column, it comes as Name 1 and Name 2 columns
+
+The DAX will be --:
+-------------------
+
+= Table.TransformColumnTypes(#"Split Column by Delimiter",{{"Name.1", type text}, {"Name.2", type text}})
+
+Original DAX of the Name column was ---------:
+----------------------------------------------
+
+= Table.TransformColumnTypes(#"Promoted Headers",{{"S.No", Int64.Type}, {"Name", type text}, {"English", Int64.Type}, {"Tamil", Int64.Type}, {"Hindi", Int64.Type}, 
+{"Business Maths", Int64.Type}, {"Computer Applications", Int64.Type}, {"Economics", Int64.Type}, {"Commerce", Int64.Type}, {"Accountancy", Int64.Type}, 
+{"Sum", Int64.Type}, {"Aggregate Percentage", type number}, {"Average", type number}, {"Rank", Int64.Type}})
+
+
+
+8. Conditional column
+9. Replace value
+10.Date conversion
+11.Pivot/unpivot
+12.Remove Duplicates
+13.Manage Parameters
+14.Query folding
+15.Index column 
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Query Setting Panel:
+
+Whatever transformations/changes that we perform gets stored in the 'Query settings' Panel in the "Applied Steps" section
+
+We would be able to see the transformations/changes in a sequential order
+
+=========================================================================================================================================================================================
+
+Transform Ribbon (Menu Bar) -> Use First Row as Headers (Near Group By option) -> Use First Row as Headers option to be selected:
+--------------------------------------------------------------------------------------------------------------------------------
+
+Here, when the option is selected, automatically in the QUERY SETTINGS PANEL and in the APPLIED STEPS section, a option called "Promoted Headers" is created and recorded and below that 
+"Changed Type 1" automatically appears showing the change in the DAX having function bar
+
+=========================================================================================================================================================================================
+
+ 
+
+
+
+
